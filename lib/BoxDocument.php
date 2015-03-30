@@ -10,29 +10,35 @@ class BoxDocument extends BoxApi
 	 * Id returned by Box View API on upload
 	 *
 	 */
-	private $id;
+	public $id;
 
 
 	/**
 	 * Document status at Box View API
 	 * 
-	 *
 	 */
-	private $status;
+	public $status;
 	
 
 	/**
 	 * File path on any distant accessible server
 	 * 
 	 */
-	private $file_url = false;
+	public $file_url = false;
 
 
 	/**
 	 * File path on the local server
 	 * 
 	 */
-	private $file_path = false;
+	public $file_path = false;
+
+
+	/**
+	 * File path on the local server
+	 * 
+	 */
+	public $zip_contents = false;
 
 
 
@@ -91,7 +97,7 @@ class BoxDocument extends BoxApi
 	 **/
 	public function getId()
 	{
-		$this->id;
+		return $this->id;
 	}
 
 
@@ -101,7 +107,7 @@ class BoxDocument extends BoxApi
 	 **/
 	public function getStatus()
 	{
-		$this->status;
+		return $this->status;
 	}
 
 

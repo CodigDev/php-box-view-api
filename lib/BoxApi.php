@@ -67,14 +67,39 @@ class BoxApi
 		$curlParams[CURLOPT_POSTFIELDS] 	= $postFields;
 
 		$result = $this->request($curlParams);
-		
+
 		if($result)
 		{
-			$document->setId($result->id);
-			$document->setStatus($result->status);
+			$document->id 		= $result->id;
+			$document->status 	= $result->status;
 		}
 
 		return $document;
+	}
+
+
+	/**
+	 * Download documents assets if it is viewable
+	 * 
+	 */
+	public function getAssets(BoxDocument $document, $ext = 'zip')
+	{
+		if( empty($document->getId()) ) {
+			throw new Exception("Document malformated, id is missing");
+		}
+
+		if($document->getStatus() !== 'ready') {
+			$this->messages[] = "Document status is not yes ready. Cannot download assets.";
+			return $this;
+		}
+
+		// then get the zip
+		$curlParams[CURLOPT_URL] = 'https://view-api.box.com/1/documents/'.$document->getId().'/content.'.$ext;
+		
+		$contents = $this->request($curlParams);
+		
+		$contents = (empty($contents)) ? false : $contents;
+		return $contents;
 	}
 
 
@@ -104,7 +129,7 @@ class BoxApi
     	
     	// Ensure our request didn't have errors.
     	if($error = curl_error($ch)) {
-    		// throw new Exception($error);
+    		throw new Exception($error);
     	}
 
    		// Close and return the curl response
@@ -116,7 +141,7 @@ class BoxApi
       		$this->messages[] = $result->response->message.': '.$result->response->code;
       		return false;
     	}
-    	
+
     	return $result;
 	}
 
@@ -125,9 +150,16 @@ class BoxApi
 	 * Parse CURL response from request
 	 *
 	 */
-	private function parseResponse($response)
+	private function parseResponse($response = null)
 	{
-		return json_decode($response);
+		if($decoded = json_decode($response)) {
+			$body = $decoded;
+		} else
+		{
+			$body = $response;
+		}
+
+		return $body;
 	}
 
 
