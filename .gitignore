@@ -1,2 +1,6 @@
 /vendor/
 /tests/config.php
+/tests/*.zip
+/tests/*.pdf
+/tests/*.docx
+/tests/*.pptx

@@ -18,7 +18,7 @@ require_once('../lib/BoxApi.php');
 
 	// on success, id and status will be hydrated automatically
 	$doc = $api->upload($doc);
-
+	
 
 		// possible errors ? BoxApi class logs them all...
 		if(!empty($api->getMessages()))
@@ -27,7 +27,7 @@ require_once('../lib/BoxApi.php');
 			print_r( $api->getMessages() );
 			echo '</pre>';
 		}
-
+		
 
 	// see how your document object was hydrated that
 	echo '<pre>';
