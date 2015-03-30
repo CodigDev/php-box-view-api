@@ -1,0 +1,17 @@
+{
+    "name": "romainbruckert/php-box-view-api",
+    "description": "PHP SDK for the Box View API",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Romain BRUCKERT",
+            "email": "romain.bruckert.esc@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.3",
+        "lib-curl": "*"
+    }
+}
