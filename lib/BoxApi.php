@@ -1,4 +1,8 @@
 <?php
+// lib/BoxApi.php
+
+require_once(__DIR__.'/BoxDocument.php');
+
 /**
  * Box View API unofficial PHP wrapper
  *
@@ -6,9 +10,20 @@
  */
 class BoxApi
 {
-
+	/**
+	 *
+	 */
 	private $api_url;
+
+	/**
+	 *
+	 */
 	private $api_key;
+
+	/**
+	 *
+	 */
+	private $messages = array();
 
 
 	/**
@@ -20,12 +35,54 @@ class BoxApi
 		$this->api_key = $api_key;
 	}
 
-	
+
+
+	/**
+	 * Uses Box API multipart upload to upload a document
+	 * 
+	 */
+	public function upload(BoxDocument $document)
+	{
+		$curlParams = array();
+		$postFields = array();
+
+		if(!is_file($document->getFilepath()))
+		{
+			throw new Exception("BoxApi::upload() File path for BoxDocument instance is not valid.");
+		}
+
+
+		$fileContents = file_get_contents($document->getFilePath());
+
+		$postFields  = array(
+			'name' 	=> "Test document",
+			'file' 	=> "@".$document->getFilePath(),
+		);
+
+		// set request parameters
+		$curlParams[CURLOPT_URL] 			= 'https://upload.view-api.box.com/1/documents';
+		$curlParams[CURLOPT_CUSTOMREQUEST]  = 'POST';
+		$curlParams[CURLOPT_HTTPHEADER][]   = 'Content-Type: multipart/form-data';
+		$curlParams[CURLOPT_SSL_VERIFYPEER] = false;
+		$curlParams[CURLOPT_POSTFIELDS] 	= $postFields;
+
+		$result = $this->request($curlParams);
+		
+		if($result)
+		{
+			$document->setId($result->id);
+			$document->setStatus($result->status);
+		}
+
+		return $document;
+	}
+
+
 	/**
 	 * 
 	 *
 	 */
-	protected function request($params = array())
+	protected function request($curlParams = array())
 	{
 		$ch = curl_init();
     	// Return the result of the curl_exec().
@@ -33,34 +90,33 @@ class BoxApi
     	$curlParams[CURLOPT_RETURNTRANSFER] = true;
     	$curlParams[CURLOPT_FOLLOWLOCATION] = true;
     	
-    	// Need to set the authorization header.
-   		$curlParams[CURLOPT_HTTPHEADER][] = 'Authorization: Token ' . $this->api_key;
-   		
-   		// Set other CURL_OPT params.
-    	foreach($params as $curlOpt => $val)
-    	{
-      		curl_setopt($ch, $curlOpt, $val);
+    	// Need to set the authorization header
+   		$curlParams[CURLOPT_HTTPHEADER][] = "Authorization: Token {$this->api_key}";
+
+
+   		// Set other CURL_OPT params
+    	foreach($curlParams as $option => $value) {
+      		curl_setopt($ch, $option, $value);
     	}
 
-    	// Get the response.
+    	// Get the response
    		$response = curl_exec($ch);
     	
     	// Ensure our request didn't have errors.
     	if($error = curl_error($ch)) {
-      		throw new Exception($error);
+    		// throw new Exception($error);
     	}
 
-   		// Close and return the curl response.
+   		// Close and return the curl response
     	$result = $this->parseResponse($response);
 
-    	var_dump($result);
-
-    	curl_close($ch);
-    	
-    	if(is_object($result->response) && property_exists($result->response, 'type') && $result->response->type === 'error') {
-      		throw new Box_View_Exception('Error: ' . $result->response->message, $result->headers->code);
+    	// Test for error on Box API side
+    	if(is_object($result) && property_exists($result->type, 'type') && $result->type === 'error')
+    	{
+      		$this->messages[] = $result->response->message.': '.$result->response->code;
+      		return false;
     	}
-
+    	
     	return $result;
 	}
 
@@ -71,7 +127,18 @@ class BoxApi
 	 */
 	private function parseResponse($response)
 	{
-		return $response;
+		return json_decode($response);
 	}
+
+
+	/**
+	 * Return error messages that were stacked
+	 *
+	 */
+	public function getMessages()
+	{
+		return $this->messages;
+	}
+
 
 }
