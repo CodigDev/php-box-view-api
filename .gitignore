@@ -4,3 +4,6 @@
 /tests/*.pdf
 /tests/*.docx
 /tests/*.pptx
+/tests/.png
+/tests/.jpg
+/tests/.jpeg
