@@ -14,14 +14,13 @@ require_once(__DIR__.'/../lib/BoxDocument.php'); // autoloads BoxApi by itself
  */
 $config = array('api_key' => $config['api_key']);
 
+$document = new BoxDocument($config);
 
 
 /**
  * 1. Upload a document (multipart upload)
  *
  */
-// $document = new BoxDocument($config);
-
 // $document->setName('Test document');
 // $document->setPath(__DIR__.'/ppp-test.docx');
 
@@ -34,14 +33,12 @@ $config = array('api_key' => $config['api_key']);
  * 1. Upload a document (URL upload)
  *
  */
-$document = new BoxDocument($config);
+// $document->setName('Test document');
+// $document->setUrl('http://www.scala-lang.org/docu/files/ScalaByExample.pdf');
 
-$document->setName('Test document');
-$document->setUrl('http://www.scala-lang.org/docu/files/ScalaByExample.pdf');
+// $document->upload();
 
-$document->upload();
-
-echo $document->getId() . ' ' . $document->getStatus();
+// echo $document->getId() . ' ' . $document->getStatus();
 
 
 
@@ -49,9 +46,7 @@ echo $document->getId() . ' ' . $document->getStatus();
  * 2. Get a document ZIP assets
  *
  */
-// $document = new BoxDocument($config);
-
-// $document->setId('7afda5c3dee44665a295e6fc658d12fd');
+// $document->setId('48dcf7437e3e4c688abff617f4fefaaa');
 
 // $zipContents = $document->assets('zip');
 
@@ -62,15 +57,34 @@ echo $document->getId() . ' ' . $document->getStatus();
 
 // 	}
 
+
+/**
+ * Loads/retrieve document meta data or thumbnail
+ *
+ */
+$document->setId('48dcf7437e3e4c688abff617f4fefaaa');
+
+$document->load();
+// var_dump($document);
+
+$thumbnail = $document->thumbnail(64,64); // width x height
+	
+	// put thumnbail somewhere
+	if($thumbnail)
+	{
+		file_put_contents(__DIR__.'/thumb.png', $thumbnail);
+	} else
+	{
+		echo "Could not get thumbnail";
+		var_dump($document->getMessages());
+	}
 	
 	
 /**
  * 2. Delete the document from Box
  *
  */
-// $document = new BoxDocument($config);
-
-// $document->setId('7afda5c3dee44665a295e6fc658d12fd');
+// $document->setId('48dcf7437e3e4c688abff617f4fefaaa');
 
 // $deleted = $document->delete();
 // var_dump($deleted);

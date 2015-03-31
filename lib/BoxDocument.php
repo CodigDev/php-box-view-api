@@ -25,6 +25,13 @@ class BoxDocument
 	 * 
 	 */
 	public $status;
+
+
+	/**
+	 * Document creation date
+	 * 
+	 */
+	public $created_at;
 	
 
 	/**
@@ -59,6 +66,25 @@ class BoxDocument
 		$this->boxApi->config($config);
 	}
 
+
+
+	/**
+	 * Fills document properties with document metadata from Box
+	 * Ref https://developers.box.com/view/#get-documents-id
+	 * 
+	 * @return (object) \BoxDocument
+	 */
+	public function load()
+	{
+		$response = $this->boxApi->getMetadata($this);
+
+		if($response)
+		{
+			$this->name 		= $response->name;
+			$this->status 		= $response->status;
+			$this->created_at 	= $response->created_at;
+		}
+	}
 
 	
 	/**
@@ -125,6 +151,19 @@ class BoxDocument
 		{
 			return false;
 		}
+	}
+
+
+	/**
+	 * Retrieves a document thumbnail
+	 * Ref https://developers.box.com/view/#get-documents-id-thumbnail
+	 * 
+	 */
+	public function thumbnail($width, $height)
+	{
+		$result = $this->boxApi->getThumbnail($this, $width, $height);
+
+		return ($result) ? $result : false;
 	}
 
 
@@ -215,6 +254,16 @@ class BoxDocument
 	public function getStatus()
 	{
 		return $this->status;
+	}
+
+
+	/**
+	 * Get created_at date
+	 *
+	 */
+	public function getCreatedAt()
+	{
+		return $this->created_at;
 	}
 
 

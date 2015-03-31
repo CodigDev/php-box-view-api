@@ -77,6 +77,55 @@ class BoxApi
 
 
 	/**
+	 * Checks document transformation status
+	 * Ref https://developers.box.com/view/#post-documents
+	 * 
+	 */
+	public function getMetadata(BoxDocument $document)
+	{
+		$curlParams[CURLOPT_URL] = 'https://view-api.box.com/1/documents/'.$document->id;
+		
+		$result = $this->request($curlParams);
+
+		// when results throwed an error
+		if(!$this->responseIsValid($result))
+    	{
+    		$this->messages['BoxApiException.getMetadata'] = $result->response->message.' ['.$result->headers->code.']';
+
+    		return false;
+    	}
+    	
+    	return $result->response;
+	}
+
+
+	/**
+	 * Retrive a thumbnail from the requested format
+	 * Ref https://developers.box.com/view/#get-documents-id-thumbnail
+	 * 
+	 */
+	public function getThumbnail(BoxDocument $document, $width = 32, $height = 32)
+	{
+		$width 	= (int) $width;
+		$height = (int) $height;
+
+		$curlParams[CURLOPT_URL] = 'https://view-api.box.com/1/documents/'.$document->id.'/thumbnail?width='.$width.'&height='.$height;
+
+		$result = $this->request($curlParams);
+
+		// when results throwed an error
+		if(!$this->responseIsValid($result))
+    	{
+    		$this->messages['BoxApiException.getThumbnail'] = $result->response->message.' ['.$result->headers->code.']';
+
+    		return false;
+    	}
+    	
+    	return $result->response;
+	}
+
+
+	/**
 	 * Uses Box API multipart upload to upload a document
 	 * Ref https://developers.box.com/view/#post-documents
 	 * 
