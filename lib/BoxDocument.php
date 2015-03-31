@@ -1,9 +1,9 @@
 <?php
 /**
- *
+ * BoxDocument class
  *
  **/
-class BoxDocument extends BoxApi
+class BoxDocument
 {
 
 	/**
@@ -14,10 +14,24 @@ class BoxDocument extends BoxApi
 
 
 	/**
+	 * Document name at Box View API
+	 * 
+	 */
+	public $name;
+
+
+	/**
 	 * Document status at Box View API
 	 * 
 	 */
 	public $status;
+
+
+	/**
+	 * Document creation date
+	 * 
+	 */
+	public $created_at;
 	
 
 	/**
@@ -35,27 +49,128 @@ class BoxDocument extends BoxApi
 
 
 	/**
-	 * File path on the local server
+	 * Private box API instance
 	 * 
 	 */
-	public $zip_contents = false;
-
+	private $boxApi = false;
 
 
 	/**
 	 *
 	 *
 	 */
-	public function __construct()
+	public function __construct($config = array())
 	{
+		$this->boxApi = new BoxApi($config);
 
+		$this->boxApi->config($config);
+	}
+
+
+
+	/**
+	 * Fills document properties with document metadata from Box
+	 * Ref https://developers.box.com/view/#get-documents-id
+	 * 
+	 * @return (object) \BoxDocument
+	 */
+	public function load()
+	{
+		$response = $this->boxApi->getMetadata($this);
+
+		if($response)
+		{
+			$this->name 		= $response->name;
+			$this->status 		= $response->status;
+			$this->created_at 	= $response->created_at;
+		}
+	}
+
+	
+	/**
+	 * Fetches documents asset as Zip and returns that content
+	 * Ref https://developers.box.com/view/#get-documents-id-content
+	 * 
+	 */
+	public function assets($ext = 'zip')
+	{
+		$contents = $this->boxApi->getAssets($this, $ext);
+
+		return $contents;
+	}
+
+
+	/**
+	 * Uploads a document to Box View API via multipart upload
+	 * Ref https://developers.box.com/view/#post-documents
+	 * 
+	 * @return (mixed) NULL or a zip contents
+	 */
+	public function upload()
+	{
+		if(empty($this->file_path) && empty($this->file_url)) {
+			return $this;
+		}
+
+		// prefer URL upload which is quicker
+		if($this->file_url)
+		{
+			$response = $this->boxApi->urlUpload($this);
+
+		} elseif($this->file_path)
+		{
+			$response = $this->boxApi->multipartUpload($this);
+		}
+		
+		if($response)
+		{
+			$this->id 		= $response->id;
+			$this->status 	= $response->status;
+		}
+
+		return $this;
+	}
+
+
+	/**
+	 * Deletes a document from the Box View API
+	 * Ref https://developers.box.com/view/#delete-documents-id
+	 * 
+	 */
+	public function delete()
+	{
+		$result = $this->boxApi->delete($this);
+
+		if($result)
+		{
+			$this->id = false;
+
+			return true;
+
+		} else
+		{
+			return false;
+		}
+	}
+
+
+	/**
+	 * Retrieves a document thumbnail
+	 * Ref https://developers.box.com/view/#get-documents-id-thumbnail
+	 * 
+	 */
+	public function thumbnail($width, $height)
+	{
+		$result = $this->boxApi->getThumbnail($this, $width, $height);
+
+		return ($result) ? $result : false;
 	}
 
 
 	/**
 	 * Set id
-	 * 
-	 **/
+	 *
+	 */
 	public function setId($id)
 	{
 		$this->id = $id;
@@ -65,9 +180,45 @@ class BoxDocument extends BoxApi
 
 
 	/**
+	 * Set URL (can be distant)
+	 *
+	 */
+	public function setUrl($file_url)
+	{
+		$this->file_url = $file_url;
+
+		return $this;
+	}
+
+
+	/**
+	 * Set path (file local path on server)
+	 *
+	 */
+	public function setPath($file_path)
+	{
+		$this->file_path = $file_path;
+
+		return $this;
+	}
+
+
+	/**
+	 * Set name
+	 *
+	 */
+	public function setName($name)
+	{
+		$this->name = $name;
+
+		return $this;
+	}
+
+
+	/**
 	 * Set status
-	 * 
-	 **/
+	 *
+	 */
 	public function setStatus($status)
 	{
 		$this->status = $status;
@@ -77,24 +228,9 @@ class BoxDocument extends BoxApi
 
 
 	/**
-	 * Set file server path
-	 *
-	 **/
-	public function setFilePath($filePath)
-	{
-		if(is_file($filePath))
-		{
-			$this->file_path = $filePath;
-		}
-
-		return $this;
-	}
-
-
-	/**
 	 * Get id
-	 * 
-	 **/
+	 *
+	 */
 	public function getId()
 	{
 		return $this->id;
@@ -102,9 +238,19 @@ class BoxDocument extends BoxApi
 
 
 	/**
+	 * Get name
+	 *
+	 */
+	public function getName()
+	{
+		return $this->name;
+	}
+
+
+	/**
 	 * Get status
-	 * 
-	 **/
+	 *
+	 */
 	public function getStatus()
 	{
 		return $this->status;
@@ -112,12 +258,22 @@ class BoxDocument extends BoxApi
 
 
 	/**
-	 * Get file server path
+	 * Get created_at date
 	 *
-	 **/
-	public function getFilePath()
+	 */
+	public function getCreatedAt()
 	{
-		return $this->file_path;
+		return $this->created_at;
+	}
+
+
+	/**
+	 * Get error messages from BoxApi class
+	 *
+	 */
+	public function getMessages()
+	{
+		return $this->boxApi->getMessages();
 	}
 
 }
