@@ -101,6 +101,28 @@ class BoxDocument
 
 
 	/**
+	 * Deletes a document from the Box View API
+	 * Ref https://developers.box.com/view/#delete-documents-id
+	 * 
+	 */
+	public function delete()
+	{
+		$result = $this->boxApi->delete($this);
+
+		if($result)
+		{
+			$this->id = false;
+
+			return true;
+
+		} else
+		{
+			return false;
+		}
+	}
+	
+
+	/**
 	 * Uploads a document to Box View API via multipart upload
 	 * Ref https://developers.box.com/view/#post-documents
 	 * 
@@ -129,28 +151,6 @@ class BoxDocument
 		}
 
 		return $this;
-	}
-
-
-	/**
-	 * Deletes a document from the Box View API
-	 * Ref https://developers.box.com/view/#delete-documents-id
-	 * 
-	 */
-	public function delete()
-	{
-		$result = $this->boxApi->delete($this);
-
-		if($result)
-		{
-			$this->id = false;
-
-			return true;
-
-		} else
-		{
-			return false;
-		}
 	}
 
 
