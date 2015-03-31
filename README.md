@@ -2,8 +2,9 @@ Box View API PHP SDK
 ================
 **Unofficial PHP SDK for the [Box View API].**
 
-*Integrates easily with Symfony
-*Created by [Romain Bruckert]
+* Integrates easily with Symfony 2
+
+* Created by [Romain Bruckert]
 
 - - -
 
@@ -15,7 +16,8 @@ For general API documentaion review the [Box View API Documentation](https://dev
 ## Getting started
 
 Include via composer or just get the repository files. You neex BoxApi and BoxDocument classes that work together.
-Now COMPATIBLE WITH SYMFONY 2 !
+
+It's now COMPATIBLE WITH SYMFONY 2 !
 
 ```
 "require": {
@@ -40,6 +42,17 @@ require('lib/BoxDocument.php');
 	
 	// show every error that happened from every manipulation above (empty if none)
 	print_r($document->getMessages());
+```
+
+... or with Symfony 
+
+```
+use RomainBruckert\BoxViewApi\BoxApi;
+use RomainBruckert\BoxViewApi\BoxDocument;
+
+	$config = array('api_key' => 'blablablah');
+	$document = new BoxDocument($config);
+	// etc...
 ```
 
 ## Upload a document
