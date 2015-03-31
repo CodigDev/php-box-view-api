@@ -43,7 +43,7 @@ require('lib/BoxDocument.php');
 
 ## Upload a document
 
-Depending on if you set document URL or local path on the server, the class will choose the best upload method. If both are set, the URL upload method will be prefered (its quicker but does not handle very large file sizes).
+Depending on if you set document URL or local path on the server, the class will choose the best upload method. If both are set, the URL upload method will be prefered (quicker from my experience but does not handle very large file sizes).
 
 ```
 $config = array('api_key' => 'blablablah');
