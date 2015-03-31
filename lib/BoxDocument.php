@@ -1,6 +1,11 @@
 <?php
+
+namespace RomainBruckert\BoxViewApi;
+
+require_once(__DIR__.'/../lib/BoxApi.php');
+
 /**
- * BoxDocument class
+ * Box View API unofficial PHP wrapper document representation class
  *
  **/
 class BoxDocument

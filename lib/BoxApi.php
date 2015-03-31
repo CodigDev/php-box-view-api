@@ -1,4 +1,7 @@
 <?php
+
+namespace RomainBruckert\BoxViewApi;
+
 /**
  * Box View API unofficial PHP wrapper
  *
@@ -305,7 +308,7 @@ class BoxApi
 	 */
 	private function parseHeaders($ch)
 	{
-		$headers = new stdClass();
+		$headers = (object) array();
 
     	$headers->code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 

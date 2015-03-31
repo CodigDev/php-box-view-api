@@ -2,11 +2,11 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-
 require_once('../tests/config.php'); 	// personal config not in repository
-require_once(__DIR__.'/../lib/BoxApi.php');
 require_once(__DIR__.'/../lib/BoxDocument.php'); // autoloads BoxApi by itself
 
+use RomainBruckert\BoxViewApi\BoxApi;
+use RomainBruckert\BoxViewApi\BoxDocument;
 
 /**
  * 0. Prepare our Box View API key
