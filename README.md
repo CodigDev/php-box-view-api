@@ -18,7 +18,7 @@ Include via composer or just get the repository files. You neex BoxApi and BoxDo
 
 ```
 "require": {
-	"romainbruckert/php-box-view-api": "dev-master"
+	"romainbruckert/php-box-view-api": "1.0.*@dev"
 }
 ...
 ```
