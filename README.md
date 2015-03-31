@@ -64,10 +64,10 @@ Depending on if you set document URL or local path on the server, the class will
 
 	$config = array('api_key' => 'blablablah');
 	$document = new BoxDocument($config);
-	
+
 	// method 1
 	$document->setUrl('http://whatever.com/my-file.pdf');
-	
+
 	// method 2
 	$document->setPath('/home/var/whatever.com/public/my-file.pdf');
 ```
@@ -80,12 +80,12 @@ Downloads original document in PDF or ZIP assets. Errors ares logges in $documen
 
 	$config = array('api_key' => 'blablablah');
 	$document = new BoxDocument($config);
-	
-	// You need an existing id
+
+	// You need an existing Box Api document id
 	$document->setId('ghj5m8bn...jeb8h86h');
-	
+
 	$zipContents = $document->assets('zip');
-	
+
 	if($zipContents)
 	{
 		// fell free to save or extract the zip on your server...
@@ -101,7 +101,7 @@ Deletes the document from the Box View API.
 
 	$config = array('api_key' => 'blablablah');
 	$document = new BoxDocument($config);
-	
+
 	$success = $document->delete();
 ```
 
@@ -114,8 +114,9 @@ Deletes the document from the Box View API.
 
 	$config = array('api_key' => 'blablablah');
 	$document = new BoxDocument($config);
-	
-	$image = $document->thumbnail(16, 16); // 16x16 output (the Box View APi has strange bugs with thumbs > 60 pixels from my experience)
+
+	 // 16x16 output (the Box View APi has strange bugs with thumbs > 60 pixels from my experience)
+	$image = $document->thumbnail(16, 16);
 	
 	// save your image on your server or somewhere
 	// file_put_contents(...);
