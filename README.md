@@ -2,7 +2,7 @@ Box View API PHP SDK
 ================
 **Unofficial PHP SDK for the [Box View API].**
 
-
+*Integrates easily with Symfony
 *Created by [Romain Bruckert]
 
 - - -
@@ -15,6 +15,7 @@ For general API documentaion review the [Box View API Documentation](https://dev
 ## Getting started
 
 Include via composer or just get the repository files. You neex BoxApi and BoxDocument classes that work together.
+Now COMPATIBLE WITH SYMFONY 2 !
 
 ```
 "require": {
