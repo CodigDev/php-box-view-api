@@ -70,6 +70,10 @@ Depending on if you set document URL or local path on the server, the class will
 
 	// method 2
 	$document->setPath('/home/var/whatever.com/public/my-file.pdf');
+
+	$document->upload(); // yeah !
+
+	echo $document->getId();
 ```
 
 ## Download document assets
