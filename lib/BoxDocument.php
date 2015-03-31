@@ -1,6 +1,8 @@
 <?php
+require_once(__DIR__.'/BoxApi.php');
+
 /**
- *
+ * BoxDocument class
  *
  **/
 class BoxDocument extends BoxApi
@@ -11,6 +13,13 @@ class BoxDocument extends BoxApi
 	 *
 	 */
 	public $id;
+
+
+	/**
+	 * Document name at Box View API
+	 * 
+	 */
+	public $name;
 
 
 	/**
@@ -41,12 +50,65 @@ class BoxDocument extends BoxApi
 	public $zip_contents = false;
 
 
+	/**
+	 * Private box API instance
+	 * 
+	 */
+	private $boxApi = false;
+
 
 	/**
 	 *
 	 *
 	 */
-	public function __construct()
+	public function __construct($config = array())
+	{
+		$this->boxApi = new BoxApi($config);
+
+		$this->boxApi->config($config);
+	}
+
+
+	
+	/**
+	 * Fetches documents asset as Zip and returns that content
+	 * Ref https://developers.box.com/view/#get-documents-id-content
+	 *
+	 */
+	public function assets($ext = 'zip')
+	{
+		return $this->boxApi->getAssets($this, $ext);
+	}
+
+
+	/**
+	 * Uploads a document to Box View API via multipart upload
+	 * Ref https://developers.box.com/view/#post-documents
+	 * 
+	 * @return (mixed) NULL or a zip contents
+	 */
+	public function upload($file_path)
+	{
+		$this->file_path = $file_path;
+
+		$result = $this->boxApi->multipartUpload($this);
+
+		if($result)
+		{
+			$this->id 		= $result->response->id;
+			$this->status 	= $result->response->status;
+		}
+
+		return $this;
+	}
+
+
+	/**
+	 * Deletes a document from the Box View API
+	 * Ref https://developers.box.com/view/#delete-documents-id
+	 *
+	 */
+	public function delete()
 	{
 
 	}
@@ -54,8 +116,8 @@ class BoxDocument extends BoxApi
 
 	/**
 	 * Set id
-	 * 
-	 **/
+	 *
+	 */
 	public function setId($id)
 	{
 		$this->id = $id;
@@ -65,9 +127,21 @@ class BoxDocument extends BoxApi
 
 
 	/**
+	 * Set name
+	 *
+	 */
+	public function setName($name)
+	{
+		$this->name = $name;
+
+		return $this;
+	}
+
+
+	/**
 	 * Set status
-	 * 
-	 **/
+	 *
+	 */
 	public function setStatus($status)
 	{
 		$this->status = $status;
@@ -77,24 +151,9 @@ class BoxDocument extends BoxApi
 
 
 	/**
-	 * Set file server path
-	 *
-	 **/
-	public function setFilePath($filePath)
-	{
-		if(is_file($filePath))
-		{
-			$this->file_path = $filePath;
-		}
-
-		return $this;
-	}
-
-
-	/**
 	 * Get id
-	 * 
-	 **/
+	 *
+	 */
 	public function getId()
 	{
 		return $this->id;
@@ -102,9 +161,19 @@ class BoxDocument extends BoxApi
 
 
 	/**
+	 * Get name
+	 *
+	 */
+	public function getName()
+	{
+		return $this->name;
+	}
+
+
+	/**
 	 * Get status
-	 * 
-	 **/
+	 *
+	 */
 	public function getStatus()
 	{
 		return $this->status;
@@ -112,12 +181,12 @@ class BoxDocument extends BoxApi
 
 
 	/**
-	 * Get file server path
+	 * Get error messages from BoxApi class
 	 *
-	 **/
-	public function getFilePath()
+	 */
+	public function getMessages()
 	{
-		return $this->file_path;
+		return $this->messages;
 	}
 
 }

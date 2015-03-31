@@ -13,50 +13,66 @@ class BoxApi
 	/**
 	 *
 	 */
-	private $api_url;
+	protected $config = array(
+		'api_key' => false,
+	);
+
 
 	/**
 	 *
 	 */
-	private $api_key;
-
-	/**
-	 *
-	 */
-	private $messages = array();
+	protected $messages = array();
 
 
 	/**
 	 * 
 	 *
 	 */
-	public function __construct($api_key)
+	public function __construct()
 	{
-		$this->api_key = $api_key;
+		
+	}
+
+
+	/**
+	 * Sets up configuration or returns it to be passed to BoxDocument
+	 *
+	 */
+	public function config($config = array())
+	{
+		if(empty($config)) {
+			return $this->config;
+		}
+
+		// Box View API key config option (required)
+		$this->config['api_key'] = isset($config['api_key']) ? $config['api_key'] : false;
+		
+		return $this;
 	}
 
 
 
 	/**
 	 * Uses Box API multipart upload to upload a document
+	 * Ref https://developers.box.com/view/#post-documents
 	 * 
 	 */
-	public function upload(BoxDocument $document)
+	public function multipartUpload(BoxDocument $document)
 	{
 		$curlParams = array();
 		$postFields = array();
 
-		if(!is_file($document->getFilepath()))
+		if(!is_file($document->file_path))
 		{
 			throw new Exception("BoxApi::upload() File path for BoxDocument instance is not valid.");
 		}
 
 
-		$fileContents = file_get_contents($document->getFilePath());
+		$fileContents = file_get_contents($document->file_path);
 
 		$postFields  = array(
 			'name' 	=> "Test document",
-			'file' 	=> "@".$document->getFilePath(),
+			'file' 	=> "@".$document->file_path,
 		);
 
 		// set request parameters
@@ -66,40 +82,32 @@ class BoxApi
 		$curlParams[CURLOPT_SSL_VERIFYPEER] = false;
 		$curlParams[CURLOPT_POSTFIELDS] 	= $postFields;
 
-		$result = $this->request($curlParams);
-
-		if($result)
-		{
-			$document->id 		= $result->id;
-			$document->status 	= $result->status;
-		}
-
-		return $document;
+		return $this->request($curlParams);
 	}
 
 
 	/**
 	 * Download documents assets if it is viewable
-	 * 
+	 * Ref https://developers.box.com/view/#get-documents-id-content 
+	 *
 	 */
 	public function getAssets(BoxDocument $document, $ext = 'zip')
 	{
-		if( empty($document->getId()) ) {
+		if(empty($document->id)) {
 			throw new Exception("Document malformated, id is missing");
 		}
 
-		if($document->getStatus() !== 'ready') {
-			$this->messages[] = "Document status is not yes ready. Cannot download assets.";
-			return $this;
-		}
+		// if($document->status !== 'ready') {
+		// 	$this->messages[] = "Document status is not yes ready. Cannot download assets.";
+		// 	return false;
+		// }
 
 		// then get the zip
-		$curlParams[CURLOPT_URL] = 'https://view-api.box.com/1/documents/'.$document->getId().'/content.'.$ext;
+		$curlParams[CURLOPT_URL] = 'https://view-api.box.com/1/documents/'.$document->id.'/content.'.$ext;
 		
-		$contents = $this->request($curlParams);
+		$result = $this->request($curlParams);
 		
-		$contents = (empty($contents)) ? false : $contents;
-		return $contents;
+		return empty($result->response) ? false : $result->response;
 	}
 
 
@@ -114,9 +122,9 @@ class BoxApi
     	
     	$curlParams[CURLOPT_RETURNTRANSFER] = true;
     	$curlParams[CURLOPT_FOLLOWLOCATION] = true;
-    	
+
     	// Need to set the authorization header
-   		$curlParams[CURLOPT_HTTPHEADER][] = "Authorization: Token {$this->api_key}";
+   		$curlParams[CURLOPT_HTTPHEADER][] = "Authorization: Token {$this->config['api_key']}";
 
 
    		// Set other CURL_OPT params
@@ -133,16 +141,20 @@ class BoxApi
     	}
 
    		// Close and return the curl response
-    	$result = $this->parseResponse($response);
+    	$result = $this->parseResponse($ch, $response);
+    	curl_close($ch);
 
     	// Test for error on Box API side
-    	if(is_object($result) && property_exists($result->type, 'type') && $result->type === 'error')
+    	if(!$this->responseIsValid($result))
     	{
-      		$this->messages[] = $result->response->message.': '.$result->response->code;
-      		return false;
-    	}
+      		$this->messages[] = $result->response->message.': '.$result->headers->code;
 
-    	return $result;
+      		return false;
+
+    	} else
+    	{
+    		return $result;
+    	}
 	}
 
 
@@ -150,16 +162,53 @@ class BoxApi
 	 * Parse CURL response from request
 	 *
 	 */
-	private function parseResponse($response = null)
+	private function parseResponse($ch, $response = null)
 	{
-		if($decoded = json_decode($response)) {
+		$headers = $this->parseHeaders($ch);
+
+		if($decoded = json_decode($response))
+		{
 			$body = $decoded;
 		} else
 		{
 			$body = $response;
 		}
 
-		return $body;
+		return (object) array(
+			'response' 	=> $body,
+			'headers' 	=> $headers
+		);
+	}
+
+
+	/**
+	 * Parse CURL headers from request
+	 *
+	 */
+	private function parseHeaders($ch)
+	{
+		$headers = new stdClass();
+
+    	$headers->code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    	return $headers;
+	}
+
+
+	/**
+	 * Checks the result/response object is valid and not an error
+	 *
+	 */
+	private function responseIsValid($result)
+	{
+		if(is_object($result->response) && isset($result->response->type) && $result->response->type === 'error')
+		{
+			return false;
+
+		} else
+		{
+			return true;
+		}
 	}
 
 
@@ -171,6 +220,5 @@ class BoxApi
 	{
 		return $this->messages;
 	}
-
 
 }
