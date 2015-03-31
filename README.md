@@ -2,9 +2,8 @@ Box View API PHP SDK
 ================
 **Unofficial PHP SDK for the [Box View API].**
 
-* Integrates easily with Symfony 2
-
-* Created by [Romain Bruckert]
+* Integrates very easily with Symfony 2 as vendor library.
+* Not all of Box View API requests are supported for now. Here is the list: (upload, thumbnail, download Zip or Pdf assets, et document meta data and delete)
 
 - - -
 
@@ -16,8 +15,6 @@ For general API documentaion review the [Box View API Documentation](https://dev
 ## Getting started
 
 Include via composer or just get the repository files. You neex BoxApi and BoxDocument classes that work together.
-
-It's now COMPATIBLE WITH SYMFONY 2 !
 
 ```
 "require": {
@@ -86,4 +83,27 @@ $document = new BoxDocument($config);
 		file_put_contents('/home/var/whatever.com/public/yeaaap/assets.zip', $zipContents);
 	}
 
+```
+
+## Delete a document
+
+Deletes the document from the Box View API.
+
+```
+$config = array('api_key' => 'blablablah');
+$document = new BoxDocument($config);
+$document->delete();
+```
+
+
+## Get thumbnail
+
+Deletes the document from the Box View API.
+
+```
+$config = array('api_key' => 'blablablah');
+$document = new BoxDocument($config);
+
+$image = $document->thumnbail(16, 16); // 16x16 output (the Box View APi has strange bugs with thumbs > 60 pixels from my experience)
+// save your image on your server or somewhere
 ```
