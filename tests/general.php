@@ -62,22 +62,22 @@ $document = new BoxDocument($config);
  * Loads/retrieve document meta data or thumbnail
  *
  */
-$document->setId('48dcf7437e3e4c688abff617f4fefaaa');
+// $document->setId('48dcf7437e3e4c688abff617f4fefaaaa');
 
-$document->load();
+// $document->load();
 // var_dump($document);
 
-$thumbnail = $document->thumbnail(64,64); // width x height
+// $thumbnail = $document->thumbnail(64,64); // width x height
 	
-	// put thumnbail somewhere
-	if($thumbnail)
-	{
-		file_put_contents(__DIR__.'/thumb.png', $thumbnail);
-	} else
-	{
-		echo "Could not get thumbnail";
-		var_dump($document->getMessages());
-	}
+// 	// put thumnbail somewhere
+// 	if($thumbnail)
+// 	{
+// 		file_put_contents(__DIR__.'/thumb.png', $thumbnail);
+// 	} else
+// 	{
+// 		echo "Could not get thumbnail";
+// 		var_dump($document->getMessages());
+// 	}
 	
 	
 /**

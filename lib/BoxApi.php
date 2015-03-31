@@ -58,7 +58,7 @@ class BoxApi
 	public function delete(BoxDocument $document)
 	{
 		if(empty($document->id)) {
-			throw new Exception("BoxApi::delete() Id BoxDocument instance is not valid.");
+			throw new \Exception("BoxApiException.delete Document id is invalid.");
 		}
 
 		$curlParams[CURLOPT_URL] 			= 'https://view-api.box.com/1/documents/'.$document->id;
@@ -86,6 +86,10 @@ class BoxApi
 	 */
 	public function getMetadata(BoxDocument $document)
 	{
+		if(empty($document->id)) {
+			throw new \Exception("BoxApiException.getMetadata Document id is invalid.");
+		}
+		
 		$curlParams[CURLOPT_URL] = 'https://view-api.box.com/1/documents/'.$document->id;
 		
 		$result = $this->request($curlParams);
@@ -94,7 +98,7 @@ class BoxApi
 		if(!$this->responseIsValid($result))
     	{
     		$this->messages['BoxApiException.getMetadata'] = $result->response->message.' ['.$result->headers->code.']';
-
+    		
     		return false;
     	}
     	
@@ -109,6 +113,10 @@ class BoxApi
 	 */
 	public function getThumbnail(BoxDocument $document, $width = 32, $height = 32)
 	{
+		if(empty($document->id)) {
+			throw new \Exception("BoxApiException.getThumbnail Document id is invalid.");
+		}
+
 		$width 	= (int) $width;
 		$height = (int) $height;
 
