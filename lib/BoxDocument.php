@@ -1,11 +1,9 @@
 <?php
-require_once(__DIR__.'/BoxApi.php');
-
 /**
  * BoxDocument class
  *
  **/
-class BoxDocument extends BoxApi
+class BoxDocument
 {
 
 	/**
@@ -44,13 +42,6 @@ class BoxDocument extends BoxApi
 
 
 	/**
-	 * File path on the local server
-	 * 
-	 */
-	public $zip_contents = false;
-
-
-	/**
 	 * Private box API instance
 	 * 
 	 */
@@ -73,11 +64,13 @@ class BoxDocument extends BoxApi
 	/**
 	 * Fetches documents asset as Zip and returns that content
 	 * Ref https://developers.box.com/view/#get-documents-id-content
-	 *
+	 * 
 	 */
 	public function assets($ext = 'zip')
 	{
-		return $this->boxApi->getAssets($this, $ext);
+		$contents = $this->boxApi->getAssets($this, $ext);
+
+		return $contents;
 	}
 
 
@@ -87,16 +80,26 @@ class BoxDocument extends BoxApi
 	 * 
 	 * @return (mixed) NULL or a zip contents
 	 */
-	public function upload($file_path)
+	public function upload()
 	{
-		$this->file_path = $file_path;
+		if(empty($this->file_path) && empty($this->file_url)) {
+			return $this;
+		}
 
-		$result = $this->boxApi->multipartUpload($this);
-
-		if($result)
+		// prefer URL upload which is quicker
+		if($this->file_url)
 		{
-			$this->id 		= $result->response->id;
-			$this->status 	= $result->response->status;
+			$response = $this->boxApi->urlUpload($this);
+
+		} elseif($this->file_path)
+		{
+			$response = $this->boxApi->multipartUpload($this);
+		}
+		
+		if($response)
+		{
+			$this->id 		= $response->id;
+			$this->status 	= $response->status;
 		}
 
 		return $this;
@@ -106,11 +109,22 @@ class BoxDocument extends BoxApi
 	/**
 	 * Deletes a document from the Box View API
 	 * Ref https://developers.box.com/view/#delete-documents-id
-	 *
+	 * 
 	 */
 	public function delete()
 	{
+		$result = $this->boxApi->delete($this);
 
+		if($result)
+		{
+			$this->id = false;
+
+			return true;
+
+		} else
+		{
+			return false;
+		}
 	}
 
 
@@ -121,6 +135,30 @@ class BoxDocument extends BoxApi
 	public function setId($id)
 	{
 		$this->id = $id;
+
+		return $this;
+	}
+
+
+	/**
+	 * Set URL (can be distant)
+	 *
+	 */
+	public function setUrl($file_url)
+	{
+		$this->file_url = $file_url;
+
+		return $this;
+	}
+
+
+	/**
+	 * Set path (file local path on server)
+	 *
+	 */
+	public function setPath($file_path)
+	{
+		$this->file_path = $file_path;
 
 		return $this;
 	}
@@ -186,7 +224,7 @@ class BoxDocument extends BoxApi
 	 */
 	public function getMessages()
 	{
-		return $this->messages;
+		return $this->boxApi->getMessages();
 	}
 
 }

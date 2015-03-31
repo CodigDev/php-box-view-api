@@ -1,8 +1,4 @@
 <?php
-// lib/BoxApi.php
-
-require_once(__DIR__.'/BoxDocument.php');
-
 /**
  * Box View API unofficial PHP wrapper
  *
@@ -51,6 +47,67 @@ class BoxApi
 	}
 
 
+	/**
+	 * Deletes a document on Box View API
+	 * Ref https://developers.box.com/view/#delete-documents-id
+	 *
+	 */
+	public function delete(BoxDocument $document)
+	{
+		if(empty($document->id)) {
+			throw new Exception("BoxApi::delete() Id BoxDocument instance is not valid.");
+		}
+
+		$curlParams[CURLOPT_URL] 			= 'https://view-api.box.com/1/documents/'.$document->id;
+		$curlParams[CURLOPT_CUSTOMREQUEST]  = 'DELETE';
+
+		// get query results
+		$result = $this->request($curlParams);
+
+		// when results throwed an error
+		if(!$this->responseIsValid($result))
+    	{
+    		$this->messages['BoxApiException.delete'] = $result->response->message.' ['.$result->headers->code.']';
+
+    		return false;
+    	}
+    	
+    	return empty($result->response) ? false : $result->response;
+	}
+
+
+	/**
+	 * Uses Box API multipart upload to upload a document
+	 * Ref https://developers.box.com/view/#post-documents
+	 * 
+	 */
+	public function urlUpload(BoxDocument $document)
+	{
+		$postFields  = array(
+			'name' 	=> $document->name,
+			'url' 	=> $document->file_url,
+		);
+
+		// set request parameters
+		$curlParams[CURLOPT_URL] 			= 'https://view-api.box.com/1/documents';
+		$curlParams[CURLOPT_CUSTOMREQUEST]  = 'POST';
+		$curlParams[CURLOPT_HTTPHEADER][]   = 'Content-Type: application/json';
+		$curlParams[CURLOPT_POSTFIELDS] 	= json_encode($postFields);
+
+		// get query results
+		$result = $this->request($curlParams);
+
+		// when results throwed an error
+		if(!$this->responseIsValid($result))
+    	{
+    		$this->messages['BoxApiException.urlUpload'] = $result->response->message.' ['.$result->headers->code.']';
+
+    		return false;
+    	}
+    	
+    	return $result->response;
+	}
+
 
 	/**
 	 * Uses Box API multipart upload to upload a document
@@ -64,17 +121,16 @@ class BoxApi
 
 		if(!is_file($document->file_path))
 		{
-			throw new Exception("BoxApi::upload() File path for BoxDocument instance is not valid.");
+			throw new Exception("BoxApi::multipartUpload() File path for BoxDocument instance is not valid.");
 		}
-
 
 		$fileContents = file_get_contents($document->file_path);
 
 		$postFields  = array(
-			'name' 	=> "Test document",
+			'name' 	=> $document->name,
 			'file' 	=> "@".$document->file_path,
 		);
-
+		
 		// set request parameters
 		$curlParams[CURLOPT_URL] 			= 'https://upload.view-api.box.com/1/documents';
 		$curlParams[CURLOPT_CUSTOMREQUEST]  = 'POST';
@@ -82,7 +138,18 @@ class BoxApi
 		$curlParams[CURLOPT_SSL_VERIFYPEER] = false;
 		$curlParams[CURLOPT_POSTFIELDS] 	= $postFields;
 
-		return $this->request($curlParams);
+		// get query results
+		$result = $this->request($curlParams);
+
+		// when results throwed an error
+		if(!$this->responseIsValid($result))
+    	{
+    		$this->messages['BoxApiException.multipartUpload'] = $result->response->message.' ['.$result->headers->code.']';
+
+    		return false;
+    	}
+    	
+    	return empty($result->response) ? false : $result->response;
 	}
 
 
@@ -105,9 +172,20 @@ class BoxApi
 		// then get the zip
 		$curlParams[CURLOPT_URL] = 'https://view-api.box.com/1/documents/'.$document->id.'/content.'.$ext;
 		
+		// get query results
 		$result = $this->request($curlParams);
-		
-		return empty($result->response) ? false : $result->response;
+
+		// when results throwed an error
+		if(!$this->responseIsValid($result))
+    	{
+    		$this->messages['BoxApiException.getAssets'] = $result->response->message.' ['.$result->headers->code.']';
+
+    		return false;
+
+    	} else
+    	{
+    		return empty($result->response) ? false : $result->response;
+    	}
 	}
 
 
@@ -144,17 +222,8 @@ class BoxApi
     	$result = $this->parseResponse($ch, $response);
     	curl_close($ch);
 
-    	// Test for error on Box API side
-    	if(!$this->responseIsValid($result))
-    	{
-      		$this->messages[] = $result->response->message.': '.$result->headers->code;
-
-      		return false;
-
-    	} else
-    	{
-    		return $result;
-    	}
+    	// return response
+    	return $result;
 	}
 
 
