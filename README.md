@@ -86,7 +86,7 @@ Downloads original document in PDF or ZIP assets. Errors ares logges in $documen
 	$document = new BoxDocument($config);
 
 	// You need an existing Box Api document id
-	$document->setId('ghj5m8bn...jeb8h86h');
+	$document->setId('dOkUm3ntId');
 
 	$zipContents = $document->assets('zip');
 
@@ -106,22 +106,45 @@ Deletes the document from the Box View API.
 	$config = array('api_key' => 'blablablah');
 	$document = new BoxDocument($config);
 
+	// You need an existing Box Api document id
+	$document->setId('dOkUm3ntId');
+
 	$success = $document->delete();
 ```
 
 
 ## Get thumbnail
 
-Deletes the document from the Box View API.
 
 ```
 
 	$config = array('api_key' => 'blablablah');
 	$document = new BoxDocument($config);
 
-	 // 16x16 output (the Box View APi has strange bugs with thumbs > 60 pixels from my experience)
+	// You need an existing Box Api document id
+	$document->setId('dOkUm3ntId');
+
+	// 16x16 output (the Box View APi has strange bugs with thumbs > 60 pixels from my experience)
 	$image = $document->thumbnail(16, 16);
 	
 	// save your image on your server or somewhere
 	// file_put_contents(...);
+```
+
+## Get metadata (hydrates all document object)
+
+Gets all available meta data  and hydrates the whole document object.
+
+```
+
+	$config = array('api_key' => 'blablablah');
+	$document = new BoxDocument($config);
+
+	// You need an existing Box Api document id
+	$document->setId('dOkUm3ntId');
+
+	// hydrates document
+	$document->load();
+
+	echo $document->getStatus();
 ```
