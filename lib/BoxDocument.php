@@ -133,7 +133,7 @@ class BoxDocument
 	 * 
 	 * @return (mixed) NULL or a zip contents
 	 */
-	public function upload()
+	public function upload($options = array())
 	{
 		if(empty($this->file_path) && empty($this->file_url)) {
 			return $this;
@@ -142,11 +142,11 @@ class BoxDocument
 		// prefer URL upload which is quicker
 		if($this->file_url)
 		{
-			$response = $this->boxApi->urlUpload($this);
+			$response = $this->boxApi->urlUpload($this, $options);
 
 		} elseif($this->file_path)
 		{
-			$response = $this->boxApi->multipartUpload($this);
+			$response = $this->boxApi->multipartUpload($this, $options);
 		}
 		
 		if($response)
@@ -157,7 +157,7 @@ class BoxDocument
 
 		return $this;
 	}
-
+	
 
 	/**
 	 * Retrieves a document thumbnail

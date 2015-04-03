@@ -33,12 +33,12 @@ $document = new BoxDocument($config);
  * 1. Upload a document (URL upload)
  *
  */
-// $document->setName('Test document');
-// $document->setUrl('http://www.scala-lang.org/docu/files/ScalaByExample.pdf');
+$document->setName('Test document');
+$document->setUrl('http://www.scala-lang.org/docu/files/ScalaByExample.pdf');
 
-// $document->upload();
+$document->upload(array('non_svg' => true));
 
-// echo $document->getId() . ' ' . $document->getStatus();
+echo $document->getId() . ' ' . $document->getStatus();
 
 
 

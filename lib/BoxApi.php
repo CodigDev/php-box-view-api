@@ -141,7 +141,7 @@ class BoxApi
 	 * Ref https://developers.box.com/view/#post-documents
 	 * 
 	 */
-	public function urlUpload(BoxDocument $document)
+	public function urlUpload(BoxDocument $document, $options = array())
 	{
 		$postFields  = array(
 			'name' 	=> $document->name,
@@ -153,6 +153,14 @@ class BoxApi
 		$curlParams[CURLOPT_CUSTOMREQUEST]  = 'POST';
 		$curlParams[CURLOPT_HTTPHEADER][]   = 'Content-Type: application/json';
 		$curlParams[CURLOPT_POSTFIELDS] 	= json_encode($postFields);
+			
+			// options by Box API
+			if(isset($options['non_svg']) && $options['non_svg'] === true) {
+				$postFields['non_svg'] = true;
+			}
+			if(isset($options['thumbnails']) && !empty($options['thumbnails'])) {
+				$postFields['thumbnails'] = $options['thumbnails'];
+			}
 
 		// get query results
 		$result = $this->request($curlParams);
@@ -174,7 +182,7 @@ class BoxApi
 	 * Ref https://developers.box.com/view/#post-documents
 	 * 
 	 */
-	public function multipartUpload(BoxDocument $document)
+	public function multipartUpload(BoxDocument $document, $options = array())
 	{
 		$curlParams = array();
 		$postFields = array();
@@ -190,6 +198,16 @@ class BoxApi
 			'name' 	=> $document->name,
 			'file' 	=> "@".$document->file_path,
 		);
+
+
+			// options by Box API
+			if(isset($options['non_svg']) && $options['non_svg'] === true) {
+				$postFields['non_svg'] = true;
+			}
+			if(isset($options['thumbnails']) && !empty($options['thumbnails'])) {
+				$postFields['thumbnails'] = $options['thumbnails'];
+			}
+
 		
 		// set request parameters
 		$curlParams[CURLOPT_URL] 			= 'https://upload.view-api.box.com/1/documents';
