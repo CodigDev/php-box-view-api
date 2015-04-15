@@ -2,6 +2,8 @@
 
 namespace RomainBruckert\BoxViewApi;
 
+use Exception;
+
 /**
  * Box View API unofficial PHP wrapper
  *
