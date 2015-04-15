@@ -194,13 +194,10 @@ class BoxApi
 			throw new Exception("BoxApi::multipartUpload() File path for BoxDocument instance is not valid.");
 		}
 
-		$fileContents = file_get_contents($document->file_path);
-
 		$postFields  = array(
 			'name' 	=> $document->name,
 			'file' 	=> "@".$document->file_path,
 		);
-
 
 			// options by Box API
 			if(isset($options['non_svg']) && $options['non_svg'] === true) {
@@ -243,12 +240,7 @@ class BoxApi
 		if(empty($document->id)) {
 			throw new Exception("Document malformated, id is missing");
 		}
-
-		// if($document->status !== 'ready') {
-		// 	$this->messages[] = "Document status is not yes ready. Cannot download assets.";
-		// 	return false;
-		// }
-
+		
 		// then get the zip
 		$curlParams[CURLOPT_URL] = 'https://view-api.box.com/1/documents/'.$document->id.'/content.'.$ext;
 		
