@@ -17,13 +17,13 @@ class BoxApi
 	protected $config = array(
 		'api_key' => false,
 	);
-
+	
 
 	/**
 	 *
 	 */
 	protected $messages = array();
-
+	
 
 	/**
 	 * 
@@ -60,7 +60,7 @@ class BoxApi
 	public function delete(BoxDocument $document)
 	{
 		if(empty($document->id)) {
-			throw new \Exception("BoxApiException.delete Document id is invalid.");
+			throw new Exception("BoxApiException.delete Document id is invalid.");
 		}
 
 		$curlParams[CURLOPT_URL] 			= 'https://view-api.box.com/1/documents/'.$document->id;
@@ -89,7 +89,7 @@ class BoxApi
 	public function getMetadata(BoxDocument $document)
 	{
 		if(empty($document->id)) {
-			throw new \Exception("BoxApiException.getMetadata Document id is invalid.");
+			throw new Exception("BoxApiException.getMetadata Document id is invalid.");
 		}
 		
 		$curlParams[CURLOPT_URL] = 'https://view-api.box.com/1/documents/'.$document->id;
@@ -116,7 +116,7 @@ class BoxApi
 	public function getThumbnail(BoxDocument $document, $width = 32, $height = 32)
 	{
 		if(empty($document->id)) {
-			throw new \Exception("BoxApiException.getThumbnail Document id is invalid.");
+			throw new Exception("BoxApiException.getThumbnail Document id is invalid.");
 		}
 
 		$width 	= (int) $width;

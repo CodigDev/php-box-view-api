@@ -72,8 +72,7 @@ class BoxDocument
 
 		$this->boxApi->config($config);
 	}
-
-
+	
 
 	/**
 	 * Fills document properties with document metadata from Box
@@ -92,7 +91,7 @@ class BoxDocument
 			$this->created_at 	= $response->created_at;
 		}
 	}
-
+	
 	
 	/**
 	 * Fetches documents asset as Zip and returns that content
