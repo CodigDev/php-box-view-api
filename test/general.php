@@ -44,13 +44,13 @@ $document = new BoxDocument($config);
  * 1. Upload a document (URL upload)
  *
  */
-$document->setName('Test document');
-// $document->setUrl('http://www.scala-lang.org/docu/files/ScalaByExample.pdf');
-$document->setPath(__DIR__.'/ppa-test.pdf');
+// $document->setName('Test document');
+// // $document->setUrl('http://www.scala-lang.org/docu/files/ScalaByExample.pdf');
+// $document->setPath(__DIR__.'/ppa-test.pdf');
 
-$document->upload(array('non_svg' => true));
+// $document->upload(array('non_svg' => true));
 
-echo $document->getId() . ' ' . $document->getStatus();
+// echo $document->getId() . ' ' . $document->getStatus();
 
 
 
@@ -58,16 +58,16 @@ echo $document->getId() . ' ' . $document->getStatus();
  * 2. Get a document ZIP assets
  *
  */
-// $document->setId('48dcf7437e3e4c688abff617f4fefaaa');
+$document->setId('7e623177476f4ff0b33c44a421b3562b');
 
-// $zipContents = $document->assets('zip');
+$zipContents = $document->assets('zip');
 
-// 	if($zipContents)
-// 	{
-// 		// put that somewhere on your server...
-// 		file_put_contents(__DIR__.'/assets.zip', $zipContents);
+	if($zipContents)
+	{
+		// put that somewhere on your server...
+		file_put_contents(__DIR__.'/assets.zip', $zipContents);
 
-// 	}
+	}
 
 
 /**
