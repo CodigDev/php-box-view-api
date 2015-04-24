@@ -7,6 +7,7 @@ require_once(__DIR__.'/../lib/BoxApi.php');
 /**
  * Box View API unofficial PHP wrapper document representation class
  *
+ * @author Romain Bruckert
  **/
 class BoxDocument
 {
