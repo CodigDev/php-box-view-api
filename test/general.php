@@ -15,15 +15,15 @@ use RomainBruckert\BoxViewApi\BoxDocument;
 $config = array('api_key' => $config['api_key']);
 
 
-$boxApi = new BoxApi($config);
-$response = $boxApi->setWebhook('http://test.com');
+//$boxApi = new BoxApi($config);
+// $response = $boxApi->setWebhook('http://v3medical.ngrok.io/document/hook/viewable');
 
-$response = $boxApi->deleteWebhook();
+// $response = $boxApi->deleteWebhook();
 
-$response = $boxApi->getWebhook('http://test.com');
+// $response = $boxApi->getWebhook();
 
-var_dump($response);
-exit();
+// var_dump($response);
+// exit();
 
 $document = new BoxDocument($config);
 
@@ -45,7 +45,8 @@ $document = new BoxDocument($config);
  *
  */
 $document->setName('Test document');
-$document->setUrl('http://www.scala-lang.org/docu/files/ScalaByExample.pdf');
+// $document->setUrl('http://www.scala-lang.org/docu/files/ScalaByExample.pdf');
+$document->setPath(__DIR__.'/ppa-test.pdf');
 
 $document->upload(array('non_svg' => true));
 

@@ -11,6 +11,7 @@ use Exception;
  */
 class BoxApi
 {
+
 	/**
 	 *
 	 */
@@ -177,9 +178,9 @@ class BoxApi
 		);
 
 		// set request parameters
-		$curlParams[CURLOPT_URL] 			= 'https://view-api.box.com/1/documents';
-		$curlParams[CURLOPT_CUSTOMREQUEST]  = 'POST';
-		$curlParams[CURLOPT_HTTPHEADER][]   = 'Content-Type: application/json';
+		$curlParams[CURLOPT_URL] 			= "https://view-api.box.com/1/documents";
+		$curlParams[CURLOPT_CUSTOMREQUEST]  = "POST";
+		$curlParams[CURLOPT_HTTPHEADER][]   = "Content-Type: application/json";
 		$curlParams[CURLOPT_POSTFIELDS] 	= json_encode($postFields);
 			
 			// options by Box API
@@ -241,9 +242,9 @@ class BoxApi
 
 		
 		// set request parameters
-		$curlParams[CURLOPT_URL] 			= 'https://upload.view-api.box.com/1/documents';
-		$curlParams[CURLOPT_CUSTOMREQUEST]  = 'POST';
-		$curlParams[CURLOPT_HTTPHEADER][]   = 'Content-Type: multipart/form-data';
+		$curlParams[CURLOPT_URL] 			= "https://upload.view-api.box.com/1/documents";
+		$curlParams[CURLOPT_CUSTOMREQUEST]  = "POST";
+		$curlParams[CURLOPT_HTTPHEADER][]   = "Content-Type: multipart/form-data";
 		$curlParams[CURLOPT_SSL_VERIFYPEER] = false;
 		$curlParams[CURLOPT_POSTFIELDS] 	= $postFields;
 
