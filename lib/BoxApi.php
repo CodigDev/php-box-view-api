@@ -29,15 +29,20 @@ class BoxApi
 	 * 
 	 *
 	 */
-	public function __construct()
+	public function __construct($config = array())
 	{
-		
+		if(isset($config['api_key'])) {
+			$this->config['api_key'] = $config['api_key'];
+		}
 	}
 
 
 	/**
 	 * Sets up configuration or returns it to be passed to BoxDocument
 	 *
+	 * @param array Config array containing at leats the Box view API key.
+	 *
+	 * @return object RomainBruckert\BoxViewApi\BoxApi. 
 	 */
 	public function config($config = array())
 	{
@@ -53,9 +58,14 @@ class BoxApi
 
 
 	/**
-	 * Deletes a document on Box View API
-	 * Ref https://developers.box.com/view/#delete-documents-id
+	 * Deletes a document from your Box View API account.
+	 * 
+	 * Doc {@link https://box-view.readme.io/}
+	 * Doc {@link https://developers.box.com/view/#delete-documents-id}
+	 * 
+	 * @param object * @return object RomainBruckert\BoxViewApi\BoxDocument.
 	 *
+	  * @return object Box API response.
 	 */
 	public function delete(BoxDocument $document)
 	{
@@ -82,9 +92,14 @@ class BoxApi
 
 
 	/**
-	 * Checks document transformation status
-	 * Ref https://developers.box.com/view/#post-documents
+	 * Retrieves document meta data.
 	 * 
+	 * Doc {@link https://box-view.readme.io/}
+	 * Doc {@link https://developers.box.com/view/#post-documents}
+	 *
+	 * @param object RomainBruckert\BoxViewApi\BoxDocument.
+	 * 
+	 * @return object Box API response.
 	 */
 	public function getMetadata(BoxDocument $document)
 	{
@@ -109,9 +124,14 @@ class BoxApi
 
 
 	/**
-	 * Retrive a thumbnail from the requested format
-	 * Ref https://developers.box.com/view/#get-documents-id-thumbnail
+	 * Retrieves a thumbnail image according to the requested format.
 	 * 
+	 * Doc {@link https://box-view.readme.io/}
+	 * Doc {@link https://developers.box.com/view/#get-documents-id-thumbnail}
+	 *
+	 * @param object RomainBruckert\BoxViewApi\BoxDocument.
+	 * 
+	 * @return object Box API response.
 	 */
 	public function getThumbnail(BoxDocument $document, $width = 32, $height = 32)
 	{
@@ -139,9 +159,15 @@ class BoxApi
 
 
 	/**
-	 * Uses Box API multipart upload to upload a document
-	 * Ref https://developers.box.com/view/#post-documents
+	 * Uploads a document using an accessible URL.
+	 *
+	 * Doc {@link https://box-view.readme.io/#page-post-documents}
 	 * 
+	 * @param array  RomainBruckert\BoxViewApi\BoxDocument.
+	 * 
+	 * @param object Transformation options such as SVG format request, thumbnails, etc.
+	 *
+	 * @return object Box API response.
 	 */
 	public function urlUpload(BoxDocument $document, $options = array())
 	{
@@ -180,9 +206,15 @@ class BoxApi
 
 
 	/**
-	 * Uses Box API multipart upload to upload a document
-	 * Ref https://developers.box.com/view/#post-documents
+	 * Uploads a document using multipart form data transfer. Better for big files.
 	 * 
+	 * Doc {@link https://box-view.readme.io/#page-documents-2}
+	 * 
+	 * @param array  RomainBruckert\BoxViewApi\BoxDocument.
+	 * 
+	 * @param object Transformation options such as SVG format request, thumbnails, etc.
+	 *
+	 * @return object Box API response.
 	 */
 	public function multipartUpload(BoxDocument $document, $options = array())
 	{
@@ -231,9 +263,16 @@ class BoxApi
 
 
 	/**
-	 * Download documents assets if it is viewable
-	 * Ref https://developers.box.com/view/#get-documents-id-content 
+	 * Download documents assets if document is viewable.
+	 * 
+	 * Doc {@link https://box-view.readme.io/}
+	 * Doc {@link https://developers.box.com/view/#get-documents-id-content }
+	 * 
+	 * @param array  RomainBruckert\BoxViewApi\BoxDocument.
+	 * 
+	 * @param string Extension/format to return (.zip or .pdf).
 	 *
+	 * @return object Box API response.
 	 */
 	public function getAssets(BoxDocument $document, $ext = 'zip')
 	{
@@ -248,33 +287,131 @@ class BoxApi
 		$result = $this->request($curlParams);
 
 		// when results throwed an error
-		if(!$this->responseIsValid($result))
-    	{
+		if(!$this->responseIsValid($result)) {
+
     		$this->messages['BoxApiException.getAssets'] = $result->response->message.' ['.$result->headers->code.']';
 
     		return false;
 
-    	} else
-    	{
+    	} else {
+
     		return empty($result->response) ? false : $result->response;
     	}
 	}
 
 
 	/**
-	 * 
+	 * Sets up a webhook url to receive notifications from the Box View API service.
+	 * Only one webhook per account can be set at this time.
 	 *
+	 * Docs {@link https://box-view.readme.io/}
+	 * 
+	 * @param string Your webhook callback URL
+	 *
+	 * @return JSON response
+	 */
+	public function setWebhook($webhookUrl)
+	{
+		$postFields['url'] = $webhookUrl;
+
+		$curlParams = array(
+			CURLOPT_URL 			=> "https://view-api.box.com/1/settings/webhook",
+			CURLOPT_CUSTOMREQUEST 	=> "POST",
+			CURLOPT_POSTFIELDS 		=> json_encode($postFields),
+			CURLOPT_HTTPHEADER   	=> array("Content-Type: application/json"),
+		);
+
+		$result = $this->request($curlParams);
+
+		if(!$this->responseIsValid($result)) {
+
+			$this->messages['BoxApiException.setWebhook'] = $result->response->message.' ['.$result->headers->code.']';
+
+    		return false;
+
+    	} else {
+    		
+    		return empty($result->response) ? false : $result->response;
+    	}
+	}
+
+
+	/**
+	 * Deletes the webhook url.
+	 *
+	 * Docs {@link https://box-view.readme.io/}
+	 *
+	 * @return JSON response
+	 */
+	public function getWebhook()
+	{
+		$curlParams = array(
+			CURLOPT_URL => "https://view-api.box.com/1/settings/webhook"
+		);
+		
+		$result = $this->request($curlParams);
+		
+		if(!$this->responseIsValid($result)) {
+
+			$this->messages['BoxApiException.setWebhook'] = $result->response->message.' ['.$result->headers->code.']';
+
+    		return false;
+
+    	} else {
+    		
+    		return empty($result->response) ? false : $result->response;
+    	}
+	}
+
+
+	/**
+	 * Deletes the webhook url.
+	 *
+	 * Docs {@link https://box-view.readme.io/}
+	 *
+	 * @return JSON response
+	 */
+	public function deleteWebhook()
+	{
+		$curlParams = array(
+			CURLOPT_URL 			=> "https://view-api.box.com/1/settings/webhook",
+			CURLOPT_CUSTOMREQUEST 	=> "DELETE",
+		);
+		
+		$result = $this->request($curlParams);
+
+		if(!$this->responseIsValid($result)) {
+
+			$this->messages['BoxApiException.setWebhook'] = $result->response->message.' ['.$result->headers->code.']';
+
+    		return false;
+
+    	} else {
+    		
+    		return empty($result->response) ? false : $result->response;
+    	}
+	}
+
+
+	/**
+	 * Makes a completely customizable CURL request.
+	 *
+	 * Docs {@link https://box-view.readme.io/}
+	 *
+	 * @param array CURL params as classic curl options.
+	 *
+	 * @return array JSON decoded response. 
 	 */
 	protected function request($curlParams = array())
 	{
 		$ch = curl_init();
     	// Return the result of the curl_exec().
     	
-    	$curlParams[CURLOPT_RETURNTRANSFER] = true;
-    	$curlParams[CURLOPT_FOLLOWLOCATION] = true;
+    	$curlParams[CURLOPT_RETURNTRANSFER] = 1;
+    	$curlParams[CURLOPT_FOLLOWLOCATION] = 1;
 
     	// Need to set the authorization header
-   		$curlParams[CURLOPT_HTTPHEADER][] = "Authorization: Token {$this->config['api_key']}";
+    	$curlParams[CURLOPT_HTTPHEADER][] = "Authorization: Token {$this->config['api_key']}";
 
 
    		// Set other CURL_OPT params
@@ -300,18 +437,19 @@ class BoxApi
 
 
 	/**
-	 * Parse CURL response from request
+	 * Parse CURL response and headers from raw request result.
 	 *
+	 * @param string Raw Curl response.
+	 *
+	 * @return object Decoded headers and response body.
 	 */
-	private function parseResponse($ch, $response = null)
+	private function parseResponse($curl, $response = null)
 	{
-		$headers = $this->parseHeaders($ch);
+		$headers = $this->parseHeaders($curl);
 
-		if($decoded = json_decode($response))
-		{
+		if($decoded = json_decode($response)) {
 			$body = $decoded;
-		} else
-		{
+		} else {
 			$body = $response;
 		}
 
@@ -323,22 +461,29 @@ class BoxApi
 
 
 	/**
-	 * Parse CURL headers from request
+	 * Parse CURL headers from a request.
 	 *
+	 * @param object Curl object.
+	 * 
+	 * @return object Decoded headers.
 	 */
-	private function parseHeaders($ch)
+	private function parseHeaders($curl)
 	{
 		$headers = (object) array();
 
-    	$headers->code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    	$headers->code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
     	return $headers;
 	}
 
 
 	/**
-	 * Checks the result/response object is valid and not an error
+	 * Checks that the result/response object is valid and not 
+	 * an error according to the Box View API response format.
+	 * 
+	 * @param object Decoded Box API reponse.
 	 *
+	 * @return boolean True or false.
 	 */
 	private function responseIsValid($result)
 	{
@@ -354,8 +499,9 @@ class BoxApi
 
 
 	/**
-	 * Return error messages that were stacked
+	 * Returns error messages that were stacked during runtime.
 	 *
+	 * @return array Array of error messages.
 	 */
 	public function getMessages()
 	{

@@ -10,7 +10,7 @@
             "role": "Developer"
         }
     ],
-    "minimum-stability":"dev",
+    "minimum-stability":"1.0",
     "require": {
         "php": ">=5.3",
         "lib-curl": "*"
