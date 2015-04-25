@@ -56,9 +56,9 @@ $document = new BoxDocument($config);
 
 /**
  * 2. Get a document ZIP assets
- *
+ * 
  */
-$document->setId('7e623177476f4ff0b33c44a421b3562b');
+$document->setId('c4f51040ef9842599845a9fc5b7f73f4');
 
 $zipContents = $document->assets('zip');
 
