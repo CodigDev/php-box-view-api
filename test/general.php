@@ -58,17 +58,17 @@ $document = new BoxDocument($config);
  * 2. Get a document ZIP assets
  * 
  */
-$document->setId('c4f51040ef9842599845a9fc5b7f73f4');
+// $document->setId('ea65b84f6794489f8c344aceff32a097');
 
-$zipContents = $document->assets('zip');
+// $zipContents = $document->assets('zip');
 
-	if($zipContents)
-	{
-		// put that somewhere on your server...
-		file_put_contents(__DIR__.'/assets.zip', $zipContents);
 
-	}
+// 	if($zipContents)
+// 	{
+// 		// put that somewhere on your server...
+// 		file_put_contents(__DIR__.'/assets.zip', $zipContents);
 
+// 	}
 
 /**
  * Loads/retrieve document meta data or thumbnail
