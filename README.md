@@ -20,7 +20,7 @@ Include via **composer** or just get the repository files. You need BoxApi and B
 ```
 
 	"require": {
-		"romainbruckert/php-box-view-api": "1.0.*@dev"
+		"adadgio/php-box-view-api": "1.0.*@dev"
 	}
 	...
 ```
@@ -48,8 +48,8 @@ After you have included the **BoxApi.php** and the **BoxDocument.php** classes i
 
 ```
 
-	use RomainBruckert\BoxViewApi\BoxApi;
-	use RomainBruckert\BoxViewApi\BoxDocument;
+	use Adadgio\BoxViewApi\BoxApi;
+	use Adadgio\BoxViewApi\BoxDocument;
 
 	$config = array('api_key' => 'blablablah');
 	$document = new BoxDocument($config);

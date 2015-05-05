@@ -1,6 +1,6 @@
 <?php
 
-namespace RomainBruckert\BoxViewApi;
+namespace Adadgio\BoxViewApi;
 
 use Exception;
 
@@ -43,7 +43,7 @@ class BoxApi
 	 *
 	 * @param array Config array containing at leats the Box view API key.
 	 *
-	 * @return object RomainBruckert\BoxViewApi\BoxApi. 
+	 * @return object Adadgio\BoxViewApi\BoxApi. 
 	 */
 	public function config($config = array())
 	{
@@ -64,7 +64,7 @@ class BoxApi
 	 * Doc {@link https://box-view.readme.io/}
 	 * Doc {@link https://developers.box.com/view/#delete-documents-id}
 	 * 
-	 * @param object * @return object RomainBruckert\BoxViewApi\BoxDocument.
+	 * @param object * @return object Adadgio\BoxViewApi\BoxDocument.
 	 *
 	  * @return object Box API response.
 	 */
@@ -98,7 +98,7 @@ class BoxApi
 	 * Doc {@link https://box-view.readme.io/}
 	 * Doc {@link https://developers.box.com/view/#post-documents}
 	 *
-	 * @param object RomainBruckert\BoxViewApi\BoxDocument.
+	 * @param object Adadgio\BoxViewApi\BoxDocument.
 	 * 
 	 * @return object Box API response.
 	 */
@@ -130,7 +130,7 @@ class BoxApi
 	 * Doc {@link https://box-view.readme.io/}
 	 * Doc {@link https://developers.box.com/view/#get-documents-id-thumbnail}
 	 *
-	 * @param object RomainBruckert\BoxViewApi\BoxDocument.
+	 * @param object Adadgio\BoxViewApi\BoxDocument.
 	 * 
 	 * @return object Box API response.
 	 */
@@ -164,7 +164,7 @@ class BoxApi
 	 *
 	 * Doc {@link https://box-view.readme.io/#page-post-documents}
 	 * 
-	 * @param array  RomainBruckert\BoxViewApi\BoxDocument.
+	 * @param array  Adadgio\BoxViewApi\BoxDocument.
 	 * 
 	 * @param object Transformation options such as SVG format request, thumbnails, etc.
 	 *
@@ -211,7 +211,7 @@ class BoxApi
 	 * 
 	 * Doc {@link https://box-view.readme.io/#page-documents-2}
 	 * 
-	 * @param array  RomainBruckert\BoxViewApi\BoxDocument.
+	 * @param array  Adadgio\BoxViewApi\BoxDocument.
 	 * 
 	 * @param object Transformation options such as SVG format request, thumbnails, etc.
 	 *
@@ -269,7 +269,7 @@ class BoxApi
 	 * Doc {@link https://box-view.readme.io/}
 	 * Doc {@link https://developers.box.com/view/#get-documents-id-content }
 	 * 
-	 * @param array  RomainBruckert\BoxViewApi\BoxDocument.
+	 * @param array  Adadgio\BoxViewApi\BoxDocument.
 	 * 
 	 * @param string Extension/format to return (.zip or .pdf).
 	 *

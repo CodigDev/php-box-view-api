@@ -1,6 +1,6 @@
 <?php
 
-namespace RomainBruckert\BoxViewApi;
+namespace Adadgio\BoxViewApi;
 
 require_once(__DIR__.'/../lib/BoxApi.php');
 
