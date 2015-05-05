@@ -1,5 +1,5 @@
 {
-    "name": "romainbruckert/php-box-view-api",
+    "name": "adadgio/php-box-view-api",
     "type": "library",
     "description": "PHP SDK for the Box View API",
     "license": "MIT",
